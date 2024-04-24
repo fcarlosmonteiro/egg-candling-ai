@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classificação de Ovos</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <div class="container mx-auto px-4 py-8">
+        <div class="mb-10">
+            <h2 class="font-bold text-2xl mb-4 text-gray-800">Classificação de fertilidade de ovos por ovoscopia</h2>
+            <form id="upload-form" action="/" method="POST" enctype="multipart/form-data">
+                <input type="file" name="egg_images" multiple class="block w-full text-sm text-gray-500 file:mb-4"/>
+                <div id="images-preview" class="mt-4 mb-4"></div>
+                <button type="submit" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md">Classificar</button>
+                <button type="button" id="clear-button" class="px-6 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg shadow-md">Limpar</button>
+            </form>
+            <div id="classification-result" class="mt-4"></div>
+        </div>
+    </div>
+    <script src="/static/upload.js"></script>
+</body>
+</html>
