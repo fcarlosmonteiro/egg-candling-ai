@@ -1,24 +1,36 @@
+function clearPreviewAndResults() {
+    console.log("Clearing previews and results...");
+    const previewDiv = document.getElementById('images-preview');
+    const resultDiv = document.getElementById('classification-result');
+    const fileInput = document.querySelector('input[type=file]');
+    
+    // Limpa o input do arquivo
+    fileInput.value = '';
+    
+    // Remove todas as imagens de visualização
+    previewDiv.innerHTML = '';
+    
+    // Limpa todos os resultados da classificação
+    resultDiv.innerHTML = '';
+}
+
 function previewFiles(event) {
-    console.log("Previewing files...");  // Log para verificar a chamada da função
     const preview = document.getElementById('images-preview');
     const files = event.target.files;
 
-    while (preview.firstChild) {
-        preview.removeChild(preview.firstChild);
-    }
+    preview.innerHTML = ''; // Clear existing previews
 
     function readAndPreview(file) {
         if (/\.(jpe?g|png|gif)$/i.test(file.name)) {
             var reader = new FileReader();
 
             reader.onload = function(event) {
-                var img = new Image();
-                img.height = 100; // Altura fixa
-                img.width = 100; // Largura fixa para manter a proporção
-                img.style.objectFit = 'cover'; // Isso garante que a imagem cubra o espaço sem distorcer
-                img.title = file.name;
-                img.src = event.target.result;
-                preview.appendChild(img);
+                var imageHtml = `
+                    <div class="flex flex-col items-center m-2">
+                        <img src="${event.target.result}" class="h-24 w-24 object-contain rounded-md shadow-lg" title="${file.name}" style="max-width:100%; height:auto;">
+                    </div>
+                `;
+                preview.insertAdjacentHTML('beforeend', imageHtml);
             };
 
             reader.readAsDataURL(file);
@@ -30,23 +42,15 @@ function previewFiles(event) {
     }
 }
 
+
 document.addEventListener("DOMContentLoaded", function() {
     const uploadForm = document.getElementById("upload-form");
-    const resultDiv = document.getElementById("classification-result");
     const fileInput = document.querySelector('input[type=file]');
     const previewDiv = document.getElementById('images-preview');
+    const resultDiv = document.getElementById('classification-result');
     const clearButton = document.getElementById('clear-button');
 
-    clearButton.addEventListener('click', function() {
-        // Limpar o formulário
-        uploadForm.reset();
-        // Remover imagens de visualização
-        while (previewDiv.firstChild) {
-            previewDiv.removeChild(previewDiv.firstChild);
-        }
-        // Limpar resultados da classificação
-        resultDiv.innerHTML = '';
-    });
+    clearButton.addEventListener('click', clearPreviewAndResults);
 
     uploadForm.addEventListener("submit", function(e) {
         e.preventDefault();
@@ -62,13 +66,12 @@ document.addEventListener("DOMContentLoaded", function() {
         .then(data => {
             let output = '';
             data.classificações.forEach((classificacao, index) => {
-                output += `<p>Imagem ${index + 1}: ${classificacao}</p>`;
+                output += `<p class="bg-gray-100 rounded p-2 shadow">Imagem ${index + 1}: ${classificacao}</p>`;
             });
             resultDiv.innerHTML = output;
         })
         .catch(error => {
-            console.error('Erro na requisição:', error);
-            resultDiv.innerHTML = `<p>Ocorreu um erro ao tentar classificar as imagens.</p>`;
+            resultDiv.innerHTML = `<p class="text-red-600">Ocorreu um erro ao tentar classificar as imagens.</p>`;
         });
     });
 
