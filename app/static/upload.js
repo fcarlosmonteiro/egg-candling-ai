@@ -51,10 +51,8 @@ document.addEventListener("DOMContentLoaded", function() {
     const clearButton = document.getElementById('clear-button');
 
     clearButton.addEventListener('click', clearPreviewAndResults);
-
     uploadForm.addEventListener("submit", function(e) {
         e.preventDefault();
-
         const formData = new FormData(uploadForm);
         const actionUrl = uploadForm.getAttribute("action");
 
@@ -64,11 +62,18 @@ document.addEventListener("DOMContentLoaded", function() {
         })
         .then(response => response.json())
         .then(data => {
-            let output = '';
+            resultDiv.innerHTML = ''; // Limpa os resultados anteriores
             data.classificações.forEach((classificacao, index) => {
-                output += `<p class="bg-gray-100 rounded p-2 shadow">Imagem ${index + 1}: ${classificacao}</p>`;
+                // Atualize aqui para apresentar os resultados de maneira mais visual
+                const color = classificacao === 'Fértil' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+                const resultHtml = `
+                    <div class="flex items-center justify-between p-4 rounded shadow ${color}">
+                        <span class="font-medium">Imagem ${index + 1}:</span>
+                        <span class="text-xl">${classificacao}</span>
+                    </div>
+                `;
+                resultDiv.insertAdjacentHTML('beforeend', resultHtml);
             });
-            resultDiv.innerHTML = output;
         })
         .catch(error => {
             resultDiv.innerHTML = `<p class="text-red-600">Ocorreu um erro ao tentar classificar as imagens.</p>`;
