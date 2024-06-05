@@ -3,22 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Classificação de Ovos</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>Egg Detection</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-50">
-    <div class="container mx-auto px-4 py-8">
-        <div class="mb-10">
-            <h2 class="font-bold text-2xl mb-4 text-gray-800">Classificação de fertilidade de ovos por ovoscopia</h2>
-            <form id="upload-form" action="/" method="POST" enctype="multipart/form-data">
-                <input type="file" name="egg_images" multiple class="block w-full text-sm text-gray-500 file:mb-4"/>
-                <div id="images-preview" class="flex flex-wrap gap-4 mt-4 mb-4"></div>
-                <button type="submit" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md">Classificar</button>
-                <button type="button" id="clear-button" class="ml-4 px-6 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg shadow-md">Limpar</button>
-            </form>
-            <div id="classification-result" class="mt-4 space-y-2"></div>
+<body class="bg-gray-100 text-gray-800">
+    <div class="container mx-auto p-4">
+        <h1 class="text-4xl font-bold text-center mb-8">Egg Detection</h1>
+        <form action="/infer" method="post" enctype="multipart/form-data" class="text-center mb-8">
+            <input type="file" name="image" accept="image/*" class="block mx-auto mb-4">
+            <div>
+                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mr-2">Upload and Detect</button>
+                <button type="button" onclick="window.location.reload();" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">Clear</button>
+            </div>
+        </form>
+        {% if results %}
+        <div class="flex flex-col items-center">
+            <h2 class="text-2xl font-semibold mb-4">Results:</h2>
+            <img src="data:image/png;base64,{{ image_data }}" class="border border-gray-300 shadow-lg mb-4">
+            <ul class="list-disc list-inside text-left">
+                {% for prediction in results %}
+                    <li class="mb-2">Class: <span class="font-semibold">{{ prediction.class }}</span> - Confidence: <span class="font-semibold">{{ prediction.confidence }}</span></li>
+                {% endfor %}
+            </ul>
         </div>
+        {% endif %}
     </div>
-    <script src="/static/upload.js"></script>
 </body>
 </html>
