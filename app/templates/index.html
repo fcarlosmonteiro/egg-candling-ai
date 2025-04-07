@@ -22,7 +22,19 @@
             <img src="data:image/png;base64,{{ image_data }}" class="border border-gray-300 shadow-lg mb-4">
             <ul class="list-disc list-inside text-left">
                 {% for prediction in results %}
-                    <li class="mb-2">Classe: <span class="font-semibold">{{ prediction.class }}</span> - Confiança: <span class="font-semibold">{{ prediction.confidence }}</span></li>
+                    <li class="mb-2">
+                        Classificação: 
+                        <span class="font-semibold">
+                            {% if prediction.class == "fertile" %}
+                                fértil
+                            {% elif prediction.class == "infertile" %}
+                                infértil
+                            {% else %}
+                                {{ prediction.class }}
+                            {% endif %}
+                        </span> 
+                        - Probabilidade: <span class="font-semibold">{{ "%.1f"|format(prediction.confidence * 100) }}%</span>
+                    </li>
                 {% endfor %}
             </ul>
         </div>

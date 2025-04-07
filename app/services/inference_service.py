@@ -22,9 +22,8 @@ class InferenceService:
         draw = ImageDraw.Draw(image)
         font = ImageFont.load_default()
         class_colors = {
-            "FE": "green",
-            "UF": "red",
-            "DE": "purple"
+            "fertile": "green",
+            "infertile": "red",
         }
 
         for prediction in predictions:
@@ -33,7 +32,12 @@ class InferenceService:
             width = prediction['width']
             height = prediction['height']
             confidence = prediction['confidence']
-            label = f"{prediction['class']} {confidence:.0%}"
+            class_name = prediction['class']
+            if class_name == "fertile":
+                class_name = "fertil"
+            elif class_name == "infertile":
+                class_name = "infertil"
+            label = f"{class_name} {confidence:.0%}"
             left = x - width / 2
             top = y - height / 2
             right = x + width / 2
