@@ -1,4 +1,4 @@
-/* Custom styles for Egg Candling AI */
+/* Egg Candling AI - Custom Styles */
 
 /* Glass effect */
 .glass-effect {
@@ -7,12 +7,7 @@
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-/* Neon glow effect */
-.neon-glow {
-    box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
-}
-
-/* Floating animation */
+/* Floating animation - usado na home */
 .floating {
     animation: floating 3s ease-in-out infinite;
 }
@@ -22,43 +17,12 @@
     50% { transform: translateY(-10px); }
 }
 
-/* Pulse animation for loading */
-.pulse-slow {
-    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+/* Neon glow effect - usado na home */
+.neon-glow {
+    box-shadow: 0 0 20px rgba(245, 158, 11, 0.5);
 }
 
-/* Custom transitions */
-.transition-all-smooth {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-/* Custom shadows */
-.shadow-glow {
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-}
-
-.shadow-glow-lg {
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-}
-
-/* Custom gradients */
-.gradient-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-
-.gradient-secondary {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-}
-
-.gradient-success {
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-}
-
-.gradient-danger {
-    background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-}
-
-/* Modern Button Styles - Egg Candling Theme - PADRONIZADOS */
+/* Button Styles - Padronizados */
 .btn-primary {
     background: linear-gradient(to right, #f59e0b, #f97316);
     color: white;
@@ -211,53 +175,94 @@
     background: rgba(255, 255, 255, 0.1);
 }
 
-/* Custom input styles */
+/* Input Styles */
 .input-primary {
-    @apply w-full px-6 py-4 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 transition-all duration-200 bg-white/80 backdrop-blur-sm;
+    width: 100%;
+    padding: 1rem 1.5rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 0.75rem;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(4px);
+    transition: all 0.2s;
 }
 
-/* Custom card styles */
+.input-primary:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+}
+
+/* Card Styles */
 .card-glass {
-    @apply glass-effect rounded-2xl p-6 shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105;
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    transition: all 0.3s;
 }
 
-/* Custom text styles */
+.card-glass:hover {
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    transform: scale(1.05);
+}
+
+/* Text Styles */
 .text-gradient {
-    @apply bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent;
+    background: linear-gradient(to right, #d97706, #ea580c);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
 }
 
 /* Loading spinner */
 .spinner {
-    @apply animate-spin rounded-full h-6 w-6 border-b-2 border-white;
+    animation: spin 1s linear infinite;
+    border-radius: 50%;
+    height: 1.5rem;
+    width: 1.5rem;
+    border-bottom: 2px solid white;
 }
 
-/* Custom scrollbar */
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Scrollbar Styles */
 .custom-scrollbar::-webkit-scrollbar {
     width: 8px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-    @apply bg-gray-100 rounded-full;
+    background: #f3f4f6;
+    border-radius: 9999px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-    @apply bg-gray-300 rounded-full hover:bg-gray-400;
+    background: #d1d5db;
+    border-radius: 9999px;
 }
 
-/* Responsive utilities */
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+}
+
+/* Responsive Styles */
 @media (max-width: 768px) {
     .mobile-padding {
-        @apply px-4 py-2;
+        padding: 0.5rem 1rem;
     }
     
     .mobile-text {
-        @apply text-sm;
+        font-size: 0.875rem;
     }
 }
 
-/* Dark mode support */
+/* Dark Mode */
 @media (prefers-color-scheme: dark) {
     .dark-mode {
-        @apply bg-gray-900 text-white;
+        background: #111827;
+        color: white;
     }
 }
