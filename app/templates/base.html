@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="pt-BR" x-data="app()">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Egg Candling AI - Detecção Inteligente de Fertilidade{% endblock %}</title>
+    
+    <!-- UnoCSS -->
+    <script src="https://cdn.jsdelivr.net/npm/@unocss/runtime"></script>
+    
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 min-h-screen font-sans">
+    
+    <!-- Navigation -->
+    {% block navigation %}{% endblock %}
+    
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- Footer -->
+    {% block footer %}{% endblock %}
+    
+    <!-- Alpine.js App Data -->
+    <script>
+        function app() {
+            return {
+                isAnalyzing: false,
+                showCamera: false,
+                currentImage: null,
+                results: null,
+                stream: null,
+
+                enterApp() {
+                    this.showNotification('Acessando sistema...', 'info');
+                    setTimeout(() => {
+                        window.location.href = '/app';
+                    }, 500);
+                },
+
+                goHome() {
+                    this.results = null;
+                    this.currentImage = null;
+                    this.stopCamera();
+                    this.showNotification('Voltando ao início...', 'info');
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 500);
+                },
+
+                handleFileUpload(event) {
+                    const file = event.target.files[0];
+                    if (file) {
+                        if (!file.type.startsWith('image/')) {
+                            this.showNotification('Por favor, selecione apenas arquivos de imagem', 'error');
+                            return;
+                        }
+
+                        if (file.size > 10 * 1024 * 1024) {
+                            this.showNotification('Arquivo muito grande. Máximo 10MB', 'error');
+                            return;
+                        }
+
+                        this.showNotification('Carregando imagem...', 'info');
+                        
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            this.currentImage = e.target.result;
+                            this.results = null; // Limpar resultados anteriores
+                            this.showNotification('Imagem carregada com sucesso!', 'success');
+                        };
+                        reader.onerror = () => {
+                            this.showNotification('Erro ao carregar a imagem', 'error');
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                },
+
+                async startCamera() {
+                    try {
+                        this.stream = await navigator.mediaDevices.getUserMedia({ 
+                            video: { 
+                                width: { ideal: 1280 },
+                                height: { ideal: 720 },
+                                facingMode: 'environment'
+                            } 
+                        });
+                        this.$refs.video.srcObject = this.stream;
+                        this.showCamera = true;
+                    } catch (error) {
+                        this.showNotification('Erro ao acessar a câmera: ' + error.message, 'error');
+                    }
+                },
+
+                capturePhoto() {
+                    const canvas = document.createElement('canvas');
+                    const video = this.$refs.video;
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    canvas.getContext('2d').drawImage(video, 0, 0);
+                    this.currentImage = canvas.toDataURL('image/jpeg', 0.9);
+                    this.stopCamera();
+                    this.showNotification('Foto capturada com sucesso!', 'success');
+                },
+
+                stopCamera() {
+                    if (this.stream) {
+                        this.stream.getTracks().forEach(track => track.stop());
+                        this.stream = null;
+                    }
+                    this.showCamera = false;
+                },
+
+                async analyzeImage() {
+                    if (!this.currentImage) {
+                        this.showNotification('Nenhuma imagem selecionada', 'error');
+                        return;
+                    }
+                    
+                    this.isAnalyzing = true;
+                    
+                    try {
+                        const response = await fetch(this.currentImage);
+                        const blob = await response.blob();
+                        
+                        const formData = new FormData();
+                        formData.append('image', blob, 'image.jpg');
+                        
+                        const apiResponse = await fetch('/infer', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        
+                        if (apiResponse.ok) {
+                            this.results = await apiResponse.json();
+                            this.showNotification('Análise concluída com sucesso!', 'success');
+                        } else {
+                            const error = await apiResponse.json();
+                            this.showNotification('Erro na análise: ' + error.error, 'error');
+                        }
+                    } catch (error) {
+                        this.showNotification('Erro ao analisar imagem: ' + error.message, 'error');
+                    }
+                    
+                    this.isAnalyzing = false;
+                },
+
+
+                showNotification(message, type = 'info') {
+                    const notification = document.createElement('div');
+                    notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg transition-all duration-300 transform translate-x-full`;
+                    
+                    const colors = {
+                        success: 'bg-green-500 text-white',
+                        error: 'bg-red-500 text-white',
+                        warning: 'bg-yellow-500 text-black',
+                        info: 'bg-blue-500 text-white'
+                    };
+                    
+                    notification.className += ` ${colors[type] || colors.info}`;
+                    notification.innerHTML = `
+                        <div class="flex items-center">
+                            <i class="fas fa-${this.getNotificationIcon(type)} mr-2"></i>
+                            <span>${message}</span>
+                            <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-white hover:text-gray-200">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    `;
+                    
+                    document.body.appendChild(notification);
+                    
+                    setTimeout(() => {
+                        notification.classList.remove('translate-x-full');
+                    }, 100);
+                    
+                    setTimeout(() => {
+                        notification.classList.add('translate-x-full');
+                        setTimeout(() => {
+                            if (notification.parentElement) {
+                                notification.remove();
+                            }
+                        }, 300);
+                    }, 5000);
+                },
+
+                getNotificationIcon(type) {
+                    const icons = {
+                        success: 'check-circle',
+                        error: 'exclamation-triangle',
+                        warning: 'exclamation-circle',
+                        info: 'info-circle'
+                    };
+                    return icons[type] || icons.info;
+                }
+            }
+        }
+    </script>
+    
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

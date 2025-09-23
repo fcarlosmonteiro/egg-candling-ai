@@ -37,6 +37,12 @@ class InferenceService:
                     # Mapeia class_id para nome da classe
                     class_name = self.model.names[class_id]
                     
+                    # Mapeia as classes do modelo para nomes padronizados
+                    if class_name == 'f':
+                        class_name = 'fertile'
+                    elif class_name == 'i':
+                        class_name = 'infertile'
+                    
                     predictions.append({
                         'x': center_x,
                         'y': center_y,
@@ -62,13 +68,14 @@ class InferenceService:
             confidence = prediction['confidence']
             class_name = prediction['class']
             
-            # Traduz nomes das classes para português
+            # Traduz nomes das classes para português para exibição
+            display_name = class_name
             if class_name == "fertile":
-                class_name = "fertil"
+                display_name = "fertil"
             elif class_name == "infertile":
-                class_name = "infertil"
+                display_name = "infertil"
             
-            label = f"{class_name} {confidence:.0%}"
+            label = f"{display_name} {confidence:.0%}"
             left = x - width / 2
             top = y - height / 2
             right = x + width / 2

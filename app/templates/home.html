@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Egg Candling AI - Home{% endblock %}
+
+{% block content %}
+<!-- Home Page -->
+<div class="min-h-screen flex items-center justify-center p-4">
+    <div class="max-w-6xl mx-auto text-center">
+        <!-- Header -->
+        <div class="mb-16">
+            <div class="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-600 rounded-full mb-8 floating neon-glow">
+                <i class="fas fa-egg text-white text-4xl"></i>
+            </div>
+            <h1 class="text-6xl font-black text-gray-800 mb-6 text-gradient">
+                Egg Candling AI
+            </h1>
+            <p class="text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                Sistema inteligente de detecção de fertilidade em ovos utilizando 
+                <span class="font-bold text-blue-600">Inteligência Artificial</span> de última geração
+            </p>
+        </div>
+
+        <!-- Features -->
+        <div class="grid md:grid-cols-3 gap-8 mb-16">
+            <div class="card-glass">
+                <div class="w-16 h-16 bg-gradient-to-r from-green-400 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-camera text-white text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-4">Captura Inteligente</h3>
+                <p class="text-gray-600 leading-relaxed">Capture imagens ou vídeos dos ovos com qualidade profissional</p>
+            </div>
+            
+            <div class="card-glass">
+                <div class="w-16 h-16 bg-gradient-to-r from-blue-400 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-brain text-white text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-4">IA Avançada</h3>
+                <p class="text-gray-600 leading-relaxed">Modelo YOLOv8 treinado para máxima precisão e confiabilidade</p>
+            </div>
+            
+            <div class="card-glass">
+                <div class="w-16 h-16 bg-gradient-to-r from-purple-400 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-chart-line text-white text-2xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-4">Resultados Precisos</h3>
+                <p class="text-gray-600 leading-relaxed">Classificação detalhada com nível de confiança em tempo real</p>
+            </div>
+        </div>
+
+        <!-- Enter Button -->
+        <div class="glass-effect rounded-3xl shadow-2xl p-10 max-w-md mx-auto">
+            <h2 class="text-3xl font-bold text-gray-800 mb-8">Acessar Sistema</h2>
+            <p class="text-gray-600 mb-8 text-center">
+                Clique no botão abaixo para acessar o sistema de detecção de fertilidade
+            </p>
+            
+            <button 
+                @click="enterApp()"
+                class="btn-primary w-full text-lg py-4"
+            >
+                <i class="fas fa-arrow-right mr-3"></i>
+                ENTRAR
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
