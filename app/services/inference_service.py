@@ -1,24 +1,52 @@
-from config import API_URL, API_KEY, MODEL_ID, CONFIDENCE_THRESHOLD, IOU_THRESHOLD
-from inference_sdk import InferenceHTTPClient
+from config import CONFIDENCE_THRESHOLD, IOU_THRESHOLD
+from ultralytics import YOLO
 from PIL import Image, ImageDraw, ImageFont
 import base64
 import io
+import os
 
 class InferenceService:
     def __init__(self):
-        self.client = InferenceHTTPClient(api_url=API_URL, api_key=API_KEY)
+        # Caminho para o modelo YOLOv8 treinado
+        model_path = os.path.join(os.path.dirname(__file__), '..', 'egg_detection_yolov8n_final.pt')
+        self.model = YOLO(model_path)
 
     def process_image(self, image_file):
         image = Image.open(image_file)
-        buffered = io.BytesIO()
-        image.save(buffered, format="JPEG")
-        img_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
+        
+        # Executa inferência com YOLOv8
+        results = self.model(image, conf=CONFIDENCE_THRESHOLD, iou=IOU_THRESHOLD)
+        
+        # Converte resultados do YOLOv8 para formato compatível
+        predictions = []
+        for result in results:
+            boxes = result.boxes
+            if boxes is not None:
+                for box in boxes:
+                    # Extrai coordenadas e informações
+                    x1, y1, x2, y2 = box.xyxy[0].cpu().numpy()
+                    confidence = float(box.conf[0].cpu().numpy())
+                    class_id = int(box.cls[0].cpu().numpy())
+                    
+                    # Converte para formato esperado (centro + largura/altura)
+                    width = x2 - x1
+                    height = y2 - y1
+                    center_x = x1 + width / 2
+                    center_y = y1 + height / 2
+                    
+                    # Mapeia class_id para nome da classe
+                    class_name = self.model.names[class_id]
+                    
+                    predictions.append({
+                        'x': center_x,
+                        'y': center_y,
+                        'width': width,
+                        'height': height,
+                        'confidence': confidence,
+                        'class': class_name
+                    })
 
-        result = self.client.infer(img_str, model_id=MODEL_ID)
-
-        predictions = [p for p in result['predictions'] if p['confidence'] >= CONFIDENCE_THRESHOLD]
-        predictions = self.non_max_suppression(predictions, IOU_THRESHOLD)
-
+        # Desenha as detecções na imagem
         draw = ImageDraw.Draw(image)
         font = ImageFont.load_default()
         class_colors = {
@@ -33,62 +61,34 @@ class InferenceService:
             height = prediction['height']
             confidence = prediction['confidence']
             class_name = prediction['class']
+            
+            # Traduz nomes das classes para português
             if class_name == "fertile":
                 class_name = "fertil"
             elif class_name == "infertile":
                 class_name = "infertil"
+            
             label = f"{class_name} {confidence:.0%}"
             left = x - width / 2
             top = y - height / 2
             right = x + width / 2
             bottom = y + height / 2
             color = class_colors.get(prediction['class'], "blue")
+            
+            # Desenha retângulo
             draw.rectangle([left, top, right, bottom], outline=color, width=2)
+            
+            # Desenha label
             text_bbox = draw.textbbox((0, 0), label, font=font)
             text_width = text_bbox[2] - text_bbox[0]
             text_height = text_bbox[3] - text_bbox[1]
             draw.rectangle([left, top - text_height, left + text_width, top], fill=color)
             draw.text((left, top - text_height), label, fill="white", font=font)
 
+        # Converte imagem para base64
         buffered = io.BytesIO()
         image.save(buffered, format="PNG")
         img_with_detections_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
 
         return predictions, img_with_detections_str
 
-    def non_max_suppression(self, predictions, iou_threshold):
-        if len(predictions) == 0:
-            return []
-
-        boxes = [(p['x'] - p['width'] / 2, p['y'] - p['height'] / 2, p['x'] + p['width'] / 2, p['y'] + p['height'] / 2) for p in predictions]
-        scores = [p['confidence'] for p in predictions]
-        indices = sorted(range(len(scores)), key=lambda k: scores[k], reverse=True)
-
-        keep = []
-        while len(indices) > 0:
-            current = indices.pop(0)
-            keep.append(current)
-            remove = []
-            for idx in indices:
-                iou = self.compute_iou(boxes[current], boxes[idx])
-                if iou > iou_threshold:
-                    remove.append(idx)
-            indices = [idx for idx in indices if idx not in remove]
-
-        return [predictions[idx] for idx in keep]
-
-    def compute_iou(self, box1, box2):
-        x1, y1, x2, y2 = box1
-        x1_, y1_, x2_, y2_ = box2
-
-        inter_x1 = max(x1, x1_)
-        inter_y1 = max(y1, y1_)
-        inter_x2 = min(x2, x2_)
-        inter_y2 = min(y2, y2_)
-
-        inter_area = max(0, inter_x2 - inter_x1) * max(0, inter_y2 - inter_y1)
-        box1_area = (x2 - x1) * (y2 - y1)
-        box2_area = (x2_ - x1_) * (y2_ - y1_)
-
-        iou = inter_area / float(box1_area + box2_area - inter_area)
-        return iou
