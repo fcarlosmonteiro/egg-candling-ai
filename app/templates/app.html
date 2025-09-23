@@ -185,8 +185,9 @@
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center">
                                     <div 
-                                        class="w-6 h-6 rounded-full mr-4 shadow-lg"
+                                        class="w-8 h-8 rounded-full mr-4 shadow-lg flex items-center justify-center text-white font-bold text-sm"
                                         :class="detection.class === 'fertile' ? 'bg-gradient-to-r from-green-400 to-emerald-500' : 'bg-gradient-to-r from-red-400 to-pink-500'"
+                                        x-text="index + 1"
                                     ></div>
                                     <span 
                                         class="font-bold text-lg"
@@ -198,10 +199,6 @@
                                     <p class="text-sm text-gray-600 font-medium">Confiança</p>
                                     <p class="font-black text-xl" x-text="(detection.confidence * 100).toFixed(1) + '%'"></p>
                                 </div>
-                            </div>
-                            <div class="mt-4 text-sm text-gray-500 bg-gray-50/50 rounded-xl p-4">
-                                <p class="mb-1"><strong>Posição:</strong> X: <span x-text="detection.bbox.x"></span>, Y: <span x-text="detection.bbox.y"></span></p>
-                                <p><strong>Tamanho:</strong> <span x-text="detection.bbox.width"></span> x <span x-text="detection.bbox.height"></span></p>
                             </div>
                         </div>
                     </template>
