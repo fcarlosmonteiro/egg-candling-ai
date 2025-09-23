@@ -5,15 +5,10 @@ from services.inference_service import InferenceService
 inference_service = InferenceService()
 
 def setup_routes(app):
-    # Habilita CORS para permitir requisições do frontend
     CORS(app)
     
     @app.route('/')
     def index():
-        return render_template('home.html')
-    
-    @app.route('/home')
-    def home():
         return render_template('home.html')
     
     @app.route('/app')

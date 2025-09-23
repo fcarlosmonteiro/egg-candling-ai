@@ -145,6 +145,17 @@
                         if (apiResponse.ok) {
                             this.results = await apiResponse.json();
                             this.showNotification('Análise concluída com sucesso!', 'success');
+                            
+                            // Scroll automático para a seção de resultados
+                            setTimeout(() => {
+                                const resultsSection = document.getElementById('results-section');
+                                if (resultsSection) {
+                                    resultsSection.scrollIntoView({ 
+                                        behavior: 'smooth',
+                                        block: 'start'
+                                    });
+                                }
+                            }, 500);
                         } else {
                             const error = await apiResponse.json();
                             this.showNotification('Erro na análise: ' + error.error, 'error');
