@@ -14,10 +14,10 @@ O **Egg Candling AI** é uma aplicação web que utiliza algoritmos de inteligê
 ### ✨ Características Principais
 
 - 🔍 **Detecção Automática**: Identifica ovos em imagens automaticamente
-- 🧠 **IA Avançada**: Modelo YOLOv8 treinado especificamente para ovos
-- 📱 **Interface Moderna**: Design responsivo e intuitivo
+- 🧠 **IA**: Modelo YOLOv8 treinado especificamente para ovos
+- 📱 **Interface**: Design responsivo
 - 📷 **Captura Flexível**: Upload de imagens ou captura via câmera
-- 📊 **Resultados Detalhados**: Classificação com nível de confiança
+- 📊 **Resultados**: Classificação com nível de confiança
 - ⚡ **Tempo Real**: Análise rápida e eficiente
 
 ## 🚀 Tecnologias Utilizadas
@@ -40,12 +40,6 @@ O **Egg Candling AI** é uma aplicação web que utiliza algoritmos de inteligê
 - **YOLOv8n** - Modelo de detecção de objetos
 - **Deep Learning** - Rede neural convolucional
 - **Computer Vision** - Processamento de imagens
-
-## 📋 Pré-requisitos
-
-- Python 3.13+
-- pip (gerenciador de pacotes Python)
-- Git
 
 ## 🛠️ Instalação
 
