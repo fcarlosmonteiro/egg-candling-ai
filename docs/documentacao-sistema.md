@@ -20,9 +20,33 @@ O **Egg Candling AI** é um sistema web para apoiar a **transluscência (candlin
 
 ---
 
-## 3. Tecnologias utilizadas
+## 3. Capturas de tela da interface
 
-### 3.1 Aplicação web (visão geral)
+Telas do fluxo principal (imagens na pasta `docs/`, ao lado deste arquivo).
+
+### 3.1 Página inicial (`/`)
+
+Landing com apresentação do sistema e acesso à área de análise.
+
+![Página inicial do Egg Candling AI](home.png)
+
+### 3.2 Área de análise (`/app`)
+
+Upload de imagem, opção de câmera e disparo da inferência.
+
+![Área de análise — captura e envio da imagem](analise.png)
+
+### 3.3 Resultados da análise
+
+Resumo por classe (fértil / infértil), imagem anotada com caixas e lista de confiança.
+
+![Resultados — detecções e métricas](resultado.png)
+
+---
+
+## 4. Tecnologias utilizadas
+
+### 4.1 Aplicação web (visão geral)
 
 | Camada | Tecnologias |
 |--------|-------------|
@@ -31,7 +55,7 @@ O **Egg Candling AI** é um sistema web para apoiar a **transluscência (candlin
 | **Apresentação** | **Jinja2** (templates), **HTML5** |
 | **Cliente (UI)** | **Alpine.js**, **UnoCSS** (runtime), **CSS** próprio (`main.css`), **Font Awesome** |
 
-### 3.2 Microserviço de inferência
+### 4.2 Microserviço de inferência
 
 | Componente | Tecnologias |
 |------------|-------------|
@@ -40,23 +64,23 @@ O **Egg Candling AI** é um sistema web para apoiar a **transluscência (candlin
 | **Imagem** | **Pillow (PIL)** — leitura, conversão RGB, desenho das caixas e exportação para resposta |
 | **Artefato** | Arquivo de pesos **`.pt`** (ex.: `egg_detection_yolov8n_final.pt`) |
 
-### 3.3 Dependências Python (referência)
+### 4.3 Dependências Python (referência)
 
 Instalação unificada: `requirements.txt` na raiz do repositório (inclui pacotes da web e do microserviço para desenvolvimento local).
 
 ---
 
-## 4. Serviço de IA — problema, natureza e modelo
+## 5. Serviço de IA — problema, natureza e modelo
 
-### 4.1 Problema de negócio
+### 5.1 Problema de negócio
 
 Auxiliar na **identificação da fertilidade** em ovos submetidos à candling, reduzindo subjetividade e padronizando a leitura a partir de **imagens digitais**.
 
-### 4.2 Natureza do problema (visão de ML)
+### 5.2 Natureza do problema (visão de ML)
 
 Trata-se de um problema de detecção e classificação: primeiramente o modelo detecta objeto e em seguida realiza a classificação atribuindo uma **classe** entre pelo menos **fértil** e **infértil**. Em outras palavras: **localização + classificação** por instância detectada.
 
-### 4.3 Modelo e pipeline
+### 5.3 Modelo e pipeline
 
 | Aspecto | Detalhe |
 |---------|---------|
@@ -70,11 +94,11 @@ O microserviço **não** substitui avaliação veterinária ou protocolos oficia
 
 ---
 
-## 5. Arquitetura MVC e microserviço de IA
+## 6. Arquitetura MVC e microserviço de IA
 
 Adotamos o **conceito clássico de MVC**, **adaptado ao contexto de candling** e à nossa nomenclatura. Aqui, o **Model** não é só uma classe na app web: ele **realiza-se** no **microserviço de inferência** (processo HTTP separado), que concentra o **modelo YOLOv8**, o arquivo **`.pt`** e, no futuro, a **persistência** dos resultados.
 
-### 5.1 Componentes (nossa nomenclatura)
+### 6.1 Componentes (nossa nomenclatura)
 
 | Conceito MVC | No Egg Candling AI |
 |--------------|-------------------|
@@ -84,7 +108,7 @@ Adotamos o **conceito clássico de MVC**, **adaptado ao contexto de candling** e
 | **Model** | **Modelo de domínio da análise**, implementado pelo **microserviço** (`inference_server.py` + `InferenceService`): inferência **YOLOv8n**, pós-processamento e JSON de resposta. O Controller fala com o Model via **`RemoteInferenceClient`** (HTTP). |
 | **Base de dados** | **Opcional / evolução** — armazenamento de histórico de análises, metadados de imagens, etc. O código atual pode operar sem BD; o diagrama mantém o elo *Model ↔ BD* como no MVC canônico. |
 
-### 5.2 Diagrama — mesmo fluxo conceitual do MVC clássico
+### 6.2 Diagrama — mesmo fluxo conceitual do MVC clássico
 
 Legendas dos rótulos alinhadas ao que se vê nos materiais de *Request process*, *Render content*, *Asking model…*, *Returning the data*, *Asking DB…* — aqui em português e com o nosso vocabulário.
 
@@ -115,7 +139,7 @@ flowchart TB
     MSVC <-->|"Consultar / gravar dados<br/>(quando houver BD)"| DB
 ```
 
-### 5.3 Passos resumidos (análise de imagem)
+### 6.3 Passos resumidos (análise de imagem)
 
 1. **Usuário** age na **View** (upload ou câmera).
 2. **View** envia a requisição ao **Controller** (`POST /infer` na app web).
@@ -125,7 +149,7 @@ flowchart TB
 
 ---
 
-## 6. Referência rápida de arquivos
+## 7. Referência rápida de arquivos
 
 | Arquivo / pasta | Papel |
 |-----------------|--------|
