@@ -28,6 +28,7 @@ O **Egg Candling AI** é uma aplicação web que utiliza algoritmos de inteligê
 - **YOLOv8 (Ultralytics)** - Modelo de detecção
 - **PIL (Pillow)** - Processamento de imagens
 - **Flask-CORS** - Controle de CORS
+- **Requests** - Cliente HTTP para o microserviço de inferência
 
 ### Frontend
 - **HTML5** - Estrutura
@@ -71,11 +72,25 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
+Para **imagens Docker separadas** (web leve vs serviço com GPU), você pode dividir manualmente: web precisa de Flask, Werkzeug, flask-cors e requests; o microserviço precisa também de numpy, pillow e ultralytics.
+
 ### 5. Execute a aplicação
+
+A arquitetura é sempre em **dois processos**: microserviço de IA + app web.
+
+**Terminal 1** — inferência (porta 5002, monitoramento em `GET /health`):
+```bash
+cd app
+python inference_server.py
+```
+
+**Terminal 2** — interface web (porta 5001):
 ```bash
 cd app
 python app.py
 ```
+
+Por padrão a app já usa `http://127.0.0.1:5002` para o microserviço. Em produção ou outra porta, defina `INFERENCE_SERVICE_URL` (veja `env.example`).
 
 ### 6. Acesse a aplicação
 Abra seu navegador e acesse: `http://localhost:5001`
@@ -88,7 +103,8 @@ egg-candling-ai/
 │   ├── controllers/
 │   │   └── egg_detector.py      # Controladores Flask
 │   ├── services/
-│   │   └── inference_service.py # Serviço de inferência IA
+│   │   ├── inference_service.py # YOLO + desenho das detecções
+│   │   └── inference_remote.py  # Cliente HTTP → microserviço
 │   ├── static/
 │   │   └── css/
 │   │       └── main.css         # Estilos customizados
@@ -97,11 +113,14 @@ egg-candling-ai/
 │   │   ├── home.html           # Página inicial
 │   │   └── app.html            # Aplicação principal
 │   ├── app.py                  # Aplicação Flask principal
-│   └── config.py               # Configurações
-├── egg_detection_yolov8n_final.pt  # Modelo YOLOv8 treinado
-├── requirements.txt            # Dependências Python
-└── README.md                  # Este arquivo
+│   ├── inference_server.py     # Microserviço HTTP só de inferência
+│   └── config.py               # Configurações compartilhadas (limiares + URL)
+├── requirements.txt            # Dependências (web + microserviço)
+├── env.example
+└── README.md
 ```
+
+O peso `egg_detection_yolov8n_final.pt` deve estar em `app/services/`, `app/` ou na raiz (ou use `MODEL_PATH`).
 
 ## 🎮 Como Usar
 
@@ -124,21 +143,17 @@ egg-candling-ai/
 
 ## ⚙️ Configurações
 
-### Parâmetros do Modelo
-Edite o arquivo `app/config.py` para ajustar:
+### Parâmetros do modelo (microserviço)
+No `app/config.py`: `CONFIDENCE_THRESHOLD`, `IOU_THRESHOLD` (usados pelo `inference_server`).
 
-```python
-CONFIDENCE_THRESHOLD = 0.6  # Limiar de confiança (0.0-1.0)
-IOU_THRESHOLD = 0.3         # Limiar de IOU para NMS (0.0-1.0)
-```
+### Variáveis de ambiente
+- **`INFERENCE_SERVICE_URL`** — URL do microserviço; se omitida, usa `http://127.0.0.1:5002` (desenvolvimento local).
+- **`INFERENCE_SERVER_PORT`** — porta do `inference_server.py` (padrão 5002).
+- **`INFERENCE_REQUEST_TIMEOUT`** — timeout do cliente HTTP na web (padrão 120 s).
+- **`MODEL_PATH`** — caminho absoluto do `.pt`, se não usar os diretórios padrão.
 
-### Porta do Servidor
-Para alterar a porta, edite `app/app.py`:
-
-```python
-if __name__ == '__main__':
-    app.run(debug=True, port=5001)  # Altere a porta aqui
-```
+### Porta da app web
+Em `app/app.py`, altere `port=5001` em `app.run(...)`.
 
 ## 🧪 Testando o Sistema
 
