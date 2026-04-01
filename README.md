@@ -11,6 +11,8 @@ Sistema inteligente de detecção de fertilidade em ovos utilizando **Inteligên
 
 O **Egg Candling AI** é uma aplicação web que utiliza algoritmos de inteligência artificial para classificar ovos como **fértil** ou **infértil** através da análise de imagens. O sistema foi desenvolvido para auxiliar produtores rurais e avicultores na identificação precisa da fertilidade dos ovos.
 
+Documentação ampliada (objetivo, funcionalidades, tecnologias, serviço de IA, diagrama MVC + microserviço): [`docs/documentacao-sistema.md`](docs/documentacao-sistema.md).
+
 ### ✨ Características Principais
 
 - 🔍 **Detecção Automática**: Identifica ovos em imagens automaticamente
