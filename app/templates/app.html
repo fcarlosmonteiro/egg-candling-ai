@@ -71,7 +71,7 @@
             </div>
 
             <!-- Camera Preview -->
-            <div x-show="showCamera" class="mt-8">
+            <div x-show="showCamera" x-cloak class="mt-8">
                 <div class="bg-gray-100/80 backdrop-blur-sm rounded-2xl p-6">
                     <video 
                         x-ref="video"
@@ -99,7 +99,7 @@
             </div>
 
             <!-- Current Image Preview -->
-            <div x-show="currentImage" class="mt-8">
+            <div x-show="currentImage" x-cloak class="mt-8">
                 <h3 class="text-xl font-bold text-gray-700 mb-6">Imagem Selecionada</h3>
                 <div class="flex justify-center">
                     <img 
@@ -128,7 +128,7 @@
         </div>
 
         <!-- Results Section -->
-        <div id="results-section" x-show="results" x-transition:enter="transition ease-out duration-500" x-transition:enter-start="opacity-0 transform translate-y-8" x-transition:enter-end="opacity-100 transform translate-y-0" class="glass-effect rounded-3xl shadow-2xl p-8">
+        <div id="results-section" x-show="results" x-cloak x-transition:enter="transition ease-out duration-500" x-transition:enter-start="opacity-0 transform translate-y-8" x-transition:enter-end="opacity-100 transform translate-y-0" class="glass-effect rounded-3xl shadow-2xl p-8">
             <h2 class="text-3xl font-bold text-gray-800 mb-8">Resultados da Análise</h2>
             
             <!-- Summary -->
